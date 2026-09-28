@@ -803,9 +803,15 @@ the execution plan. Code is written to the workspace root, never to
 - Brownfield: modify files in-place. NEVER create duplicates like
   `ClassName_modified.java`
 - Add `data-testid` attributes to interactive UI elements for test automation
-- Before review, write the engine-required companion `source-manifest.json`
-  listing every application-source path this unit created, modified, or deleted,
-  including files written by shell commands, scaffolding, or generators
+- Work in this order: plan (Step 2), the person's Plan Approval (Step 3),
+  generation (Step 4), the Step 5 files, then the review (when the directive
+  lists the `reviewer` protocol module) and completion (Step 6). The review
+  checks the finished work: the reviewer never runs before Plan Approval or
+  before the Step 5 files exist
+- In Step 5, before the review, write the engine-required companion
+  `source-manifest.json` listing every application-source path this unit
+  created, modified, or deleted, including files written by shell commands,
+  scaffolding, or generators
 - Measurable quality targets from NFR Requirements, NFR Design, and the Testing
   Contract coverage floor are inputs, not suggestions. NEVER relax, lower, or
   disable a defined target, including threshold settings in test or build
@@ -1043,8 +1049,16 @@ This stage has a **two-part structure**: planning followed by generation.
    changed stage-source paths outside all fresh reviewed manifests block
    completion.
 
-6. **Prepare Completion** -- Verify the unit's code and summary artifacts.
-   Do not edit state; report the gate outcome through `aidlc-orchestrate.ts`.
+6. **Review, then Prepare Completion** -- When the directive lists the
+   `reviewer` protocol module, the architecture reviewer checks the finished
+   work first (plan, test instructions, code summary, traceability, and, for a
+   Unit, the source paths `source-manifest.json` claims), per section 12a of
+   `stage-protocol-reviewer.md`. The review is recorded against
+   `code-generation-plan`, the stage's `review_artifact`; that names where the
+   review is filed, not a plan review before Plan Approval. For a Unit the
+   engine refuses the review request until the Step 5 files exist. Then verify
+   the unit's code and summary artifacts. Do not edit state; report the gate
+   outcome through `aidlc-orchestrate.ts`.
 
 7. **Completion** -- Present completion message and approval gate.
 

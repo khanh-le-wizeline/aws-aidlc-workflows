@@ -70,7 +70,8 @@ outputs: application code + code-generation-plan.md, code-generation-questions.m
 - Application code goes to workspace root, NEVER to the record dir
 - Brownfield: modify files in-place. NEVER create duplicates like ClassName_modified.java
 - Add data-testid attributes to interactive UI elements for test automation
-- Before review, write `source-manifest.json` listing every application-source path this unit created, modified, or deleted, including shell-, scaffolding-, and generator-written files
+- Work in this order: plan (Step 2), the person's Plan Approval (Step 3), generation (Step 4), the Step 5 files, then the review (when `directive.protocol_modules` lists `reviewer`) and the completion handoff (Step 6). The review checks the finished work: never dispatch the reviewer before Plan Approval or before the Step 5 files exist
+- In Step 5, before the review, write `source-manifest.json` listing every application-source path this unit created, modified, or deleted, including shell-, scaffolding-, and generator-written files
 - Measurable quality targets from NFR Requirements, NFR Design, and the Testing
   Contract coverage floor are inputs, not suggestions. NEVER relax, lower, or
   disable a defined target, including threshold settings in test or build
@@ -408,6 +409,15 @@ must be one existing workspace-relative implementation or test file:
 ```
 
 ### Step 6: Completion Handoff
+
+When `directive.protocol_modules` lists `reviewer`, run the review now, as
+section 12a of `stage-protocol-reviewer.md` describes, and only then continue
+below. It reviews the finished work: the plan, test instructions, code summary,
+traceability, and, for a Unit, the source paths `source-manifest.json` claims.
+The frontmatter's `review_artifact: code-generation-plan` names the file the
+review is recorded against; it does not ask for a plan review before Plan
+Approval. For a Unit, the engine refuses the review request until the Step 5
+files exist.
 
 Hand completion to `stage-protocol.md` via
 `{{INVOKE}} engine orchestrate report --stage code-generation --result <outcome>`.

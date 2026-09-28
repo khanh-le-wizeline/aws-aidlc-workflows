@@ -3265,4 +3265,17 @@ describe("t305 stage and protocol source-attribution requirements", () => {
     expect(construction).toContain("before the in-Bolt review"); expect(construction).toContain("worktree-relative and omit `repo`"); expect(definition).toContain("source-manifest.json"); expect(definition).toContain("stage-entry source baseline");
     expect(swarm).toContain("Post-finalize source landing"); expect(swarm).toContain("cleanup-only reconciliation"); expect(swarm).toContain("SWARM_SOURCE_MERGED");
   });
+
+  // The review request needs every Step 5 file (aidlc-log.ts review), so the
+  // stage must place the review after Plan Approval and Step 5, in one place.
+  test("Code Generation names one order: Plan Approval, generation, Step 5 files, then review", () => {
+    const stage=readFileSync(STAGE,"utf-8");
+    expect(stage).not.toContain("- Before review, write `source-manifest.json`");
+    expect(stage).toContain("never dispatch the reviewer before Plan Approval or before the Step 5 files exist");
+    const step3=stage.indexOf("### Step 3: Plan Approval"); const step5=stage.indexOf("### Step 5:"); const step6=stage.indexOf("### Step 6:"); const step7=stage.indexOf("### Step 7:");
+    const review=stage.indexOf("When `directive.protocol_modules` lists `reviewer`, run the review now");
+    expect(step3).toBeGreaterThan(0); expect(step5).toBeGreaterThan(step3); expect(step6).toBeGreaterThan(step5);
+    expect(review).toBeGreaterThan(step6); expect(review).toBeLessThan(stage.indexOf("engine orchestrate report --stage code-generation")); expect(review).toBeLessThan(step7);
+    expect(stage.indexOf("section 12a of `stage-protocol-reviewer.md`")).toBeGreaterThan(step6);
+  });
 });
