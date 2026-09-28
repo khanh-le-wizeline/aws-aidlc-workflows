@@ -245,6 +245,7 @@ import {
   setStageSuffix,
   scopeGridPath,
   scopesDir,
+  composerProposalPath,
   inspectSubagentInflight,
   harnessDataPath,
   pluginsEnabled,
@@ -8900,6 +8901,9 @@ function handleCodekbScopeDiff(projectDir: string, flags: Record<string, string>
 // scopeGridPath): those are module-relative to the installed tool, which a
 // prose agent cannot derive itself, so the composer agent is TOLD where the
 // runtime reads scope data (and therefore where an authored scope must land).
+// It also prints proposalPath, the project-relative file the composer writes
+// its grid proposal to before `validate-grid` (composerProposalPath). The
+// file tool creates its parent dirs on the write.
 // Writes nothing, no audit, no mkdir - mirrors codekb-path's read-only shape.
 function handleDetect(projectDir: string, flags: Record<string, string>): void {
   const scan = detectWorkspace(projectDir);
@@ -8912,6 +8916,7 @@ function handleDetect(projectDir: string, flags: Record<string, string>): void {
     submodules: scan.submodules,
     scopesDir: scopesDir(),
     scopeGridPath: scopeGridPath(),
+    proposalPath: toPosix(relative(projectDir, composerProposalPath(projectDir))),
     scopes: [...validScopes()],
   };
   if (flags.json === "true") {
@@ -8932,6 +8937,7 @@ function handleDetect(projectDir: string, flags: Record<string, string>): void {
       submoduleLine +
       `Scopes dir: ${payload.scopesDir}\n` +
       `Scope grid: ${payload.scopeGridPath}\n` +
+      `Proposal file: ${payload.proposalPath}\n` +
       `Valid scopes: ${payload.scopes.join(", ")}\n`,
   );
 }

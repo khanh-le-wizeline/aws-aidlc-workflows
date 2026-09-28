@@ -77,8 +77,10 @@ START deciding. Target: complete in ≤ 4 tool calls when CodeKB is present.
 ### Step 1: Detect Workspace
 
 Run `{{INVOKE}} engine workspace detect --json`. Returns workspace scan
-(projectType, languages, frameworks, buildSystem) and the resolved `scopesDir`
-+ `scopeGridPath`. You write ONLY to those two printed paths.
+(projectType, languages, frameworks, buildSystem), the resolved `scopesDir`
++ `scopeGridPath`, and `proposalPath`, the project-relative file your grid
+proposal goes in for validation (Step 6; git ignores it). You write ONLY to
+those three printed paths.
 
 ### Step 2: Estimate the Autonomy Risk Score (ARS)
 
@@ -552,10 +554,14 @@ gate.
 
 ### Step 6: Validate and Read the Distance
 
-Write your ARS-derived grid to a temp file and run:
+Write your ARS-derived grid to the `proposalPath` Step 1 printed, replacing
+whatever an earlier run left there. Never use a system temp directory: some
+harnesses' file tools cannot write outside the project. Then run:
 ```
-{{INVOKE}} engine graph validate-grid --proposal <path> --project-type <greenfield|brownfield> [--space <selected-space>] [--intent <selected-intent>]
+{{INVOKE}} engine graph validate-grid --project-type <greenfield|brownfield> [--space <selected-space>] [--intent <selected-intent>]
 ```
+With no `--proposal`, the validator reads `proposalPath`, so every run checks
+the grid you last wrote there.
 When the dispatch selected a workflow explicitly, pass that same space and
 intent so Guard Policy validation reads that workflow's memory. For a
 front/report proposal, write the file as `{ "stages": <grid>, "scopeSettings":
@@ -888,7 +894,7 @@ Composed scopes ship `keywords: []`. They resolve by `--scope <name>` but never
 participate in inference. Making a scope inferable is an explicit human choice
 at the gate. If keywords are granted, run the collision check:
 ```
-{{INVOKE}} engine graph validate-grid --proposal <path> --keywords <granted,csv>
+{{INVOKE}} engine graph validate-grid --keywords <granted,csv>
 ```
 
 ---
